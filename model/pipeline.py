@@ -41,9 +41,9 @@ class SonicSniffer(pl.LightningModule):
             # log images (wandb)
             self.logger.experiment.log(
                 {
-                    "val_x": [wandb.Image(i) for i in x],
-                    "val_y": [wandb.Image(i) for i in y],
-                    "val_y_hat": [wandb.Image(i) for i in y_hat],
+                    "train_x": [wandb.Image(i) for i in x],
+                    "train_y": [wandb.Image(i) for i in y],
+                    "train_y_hat": [wandb.Image(i) for i in y_hat],
                 }
             )
         return loss

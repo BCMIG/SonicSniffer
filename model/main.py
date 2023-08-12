@@ -6,8 +6,11 @@ from config import get_config
 from utils import FindUnusedParametersCallback
 from lightning.pytorch.strategies import DDPStrategy
 
+from lovely_tensors import monkey_patch, set_config
 
 def main():
+    monkey_patch()
+    set_config(fig_show=True)  # so that it works outside of Jupyter
     logger = pl.loggers.WandbLogger(project="soundsniffer")
 
     cfg = get_config()
