@@ -40,3 +40,15 @@ class FindUnusedParametersCallback(Callback):
         for name, param in pl_module.named_parameters():
             if param.grad is None:
                 print(f"Unused param: {name}")
+
+
+def get_n_params(model):
+    pp = 0
+    for p in list(model.parameters()):
+        nn = 1
+        for s in list(p.size()):
+            nn = nn * s
+        pp += nn
+    # in millions
+    print(f"Number of parameters: {pp/1000000}M")
+    return pp

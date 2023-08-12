@@ -2,8 +2,8 @@ default:
     just --list
 
 main:
-    python main.py --mixed_precision --log_every_n_steps=1 --batch_size=4 --data_dir="/data/adhinart/SonicSniffer/server/uploads" --model_type="b1"
+    python main.py --mixed_precision --log_every_n_steps=1 --batch_size=4 --data_dir="/data/adhinart/SonicSniffer/server/uploads" --model_type="small"
     # --find_unused_parameters 
 main_local:
-    python main.py --mixed_precision --log_every_n_steps=1 --batch_size=4 --find_unused_parameters --cpu --data_dir="/run/host/var/home/jason/mnt/SonicSniffer/server/uploads"
+    python main.py --mixed_precision --log_every_n_steps=1 --batch_size=4 --find_unused_parameters --cpu --data_dir="/run/host/var/home/jason/mnt/SonicSniffer/server/uploads" --model_type="tiny"
 

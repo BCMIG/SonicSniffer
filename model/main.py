@@ -8,6 +8,7 @@ from lightning.pytorch.strategies import DDPStrategy
 
 from lovely_tensors import monkey_patch, set_config
 
+
 def main():
     monkey_patch()
     set_config(fig_show=True)  # so that it works outside of Jupyter
@@ -16,13 +17,12 @@ def main():
     cfg = get_config()
     # to ensure deterministic splits
     pl.seed_everything(cfg.seed)
-    model = get_model(cfg.model_type)
     num_samples = 128
+    model = get_model(cfg.model_type, num_samples)
     train_loader, test_loader, val_loader = get_dataloaders(
         num_samples, cfg.batch_size, cfg.data_dir
     )
     sniffer = SonicSniffer(
-        num_samples,
         model,
         cfg.lr,
         cfg.weight_decay,
