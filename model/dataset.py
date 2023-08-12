@@ -118,11 +118,7 @@ def generate_labels(spectrogram_timestamps, keys, keypress_timestamps, is_keydow
 
 
 class SonicSnifferDataset(Dataset):
-    def __init__(
-        self,
-        num_samples,
-        data_path="/run/host/var/home/jason/projects/SonicSniffer/server/uploads",
-    ):  # , transform=None):
+    def __init__(self, num_samples, data_path):  # , transform=None):
         self.data_path = data_path
         self.audio_files = sorted(
             [x for x in os.listdir(data_path) if x.endswith(".wav")]
@@ -202,8 +198,8 @@ class SonicSnifferDataset(Dataset):
         return num_neg / num_pos
 
 
-def get_dataloaders(num_samples, batch_size):
-    dataset = SonicSnifferDataset(num_samples)
+def get_dataloaders(num_samples, batch_size, data_dir):
+    dataset = SonicSnifferDataset(num_samples, data_dir)
     dataset_size = len(dataset)
     train_size = int(0.8 * dataset_size)  # 80% for training
     test_size = (dataset_size - train_size) // 2  # 10% for testing
@@ -221,10 +217,10 @@ def get_dataloaders(num_samples, batch_size):
 
 
 if __name__ == "__main__":
-    dataset = SonicSnifferDataset(128)
+    data_path = "/run/host/var/home/jason/projects/SonicSniffer/server/uploads"
+    dataset = SonicSnifferDataset(128, data_path)
     print(f"Estimated pos_weight: {dataset.estimate_pos_weight()}")
 
-    data_path = "/run/host/var/home/jason/projects/SonicSniffer/server/uploads"
     audio_files = sorted([x for x in os.listdir(data_path) if x.endswith(".wav")])
     keypress_files = sorted([x for x in os.listdir(data_path) if x.endswith(".json")])
 

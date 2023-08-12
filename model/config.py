@@ -5,6 +5,7 @@ def get_config():
     parser = argparse.ArgumentParser()
 
     # arguments for main.py
+    parser.add_argument("--data_dir", type=str)
     parser.add_argument("--log_every_n_steps", type=int, default=50)
 
     parser.add_argument("--mixed_precision", action="store_true")

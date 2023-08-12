@@ -15,7 +15,9 @@ def main():
     pl.seed_everything(cfg.seed)
     model = get_model()
     num_samples = 128
-    train_loader, test_loader, val_loader = get_dataloaders(num_samples, cfg.batch_size)
+    train_loader, test_loader, val_loader = get_dataloaders(
+        num_samples, cfg.batch_size, cfg.data_dir
+    )
     sniffer = SonicSniffer(
         num_samples, model, cfg.lr, cfg.weight_decay, cfg.pos_weight, fused=not cfg.cpu
     )

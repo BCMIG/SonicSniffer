@@ -5,5 +5,5 @@ main:
     python main.py --mixed_precision --log_every_n_steps=1 --batch_size=4 --find_unused_parameters
 
 main_local:
-    python main.py --mixed_precision --log_every_n_steps=1 --batch_size=4 --find_unused_parameters --cpu
+    python main.py --mixed_precision --log_every_n_steps=1 --batch_size=4 --find_unused_parameters --cpu --data_dir="/run/host/var/home/jason/projects/SonicSniffer/server/uploads"
 
