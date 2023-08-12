@@ -15,6 +15,7 @@ def main():
     logger = pl.loggers.WandbLogger(project="soundsniffer")
 
     cfg = get_config()
+    print(cfg)
     # to ensure deterministic splits
     pl.seed_everything(cfg.seed)
     num_samples = 128

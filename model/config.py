@@ -32,6 +32,6 @@ def get_config():
 
     # https://arxiv.org/pdf/2012.12877.pdf
     # *4 because DDP with 4 GPUs
-    args.lr = 0.0005 * args.batch_size * 4 / 512
+    args.lr = 0.0001 * args.batch_size * 4  #  / 512
 
     return args
