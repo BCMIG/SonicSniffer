@@ -13,7 +13,6 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import matplotlib.pyplot as plt
 
 
-@functools.cache
 def get_spectrogram(path, n_mels=128):
     speech, sample_rate = torchaudio.load(path)
 
@@ -83,7 +82,6 @@ def reconstruct_keypresses(keys, is_keydown):
     return "".join(output)
 
 
-@functools.cache
 def generate_labels(spectrogram_timestamps, keys, keypress_timestamps, is_keydown):
     spectrogram_timestamps = spectrogram_timestamps.clone()
     # Make sure the first timestamp is not 0, so that first keydown is registered
@@ -121,6 +119,23 @@ def generate_labels(spectrogram_timestamps, keys, keypress_timestamps, is_keydow
     return labels, space_keyup_idx
 
 
+@functools.cache
+def get_specgram_and_labels(
+    audio_path, keypress_path, sample_rate, num_channels, n_mels
+):
+    # log_mel_specgram: [channels, n_mels, time]
+    log_mel_specgram, sample_rate, specgram_timestamps = get_spectrogram(
+        audio_path, n_mels
+    )
+    assert sample_rate == sample_rate
+    assert log_mel_specgram.shape[0] == num_channels
+    keys, keypress_timestamps, is_keydown = read_keypresses(keypress_path)
+    labels, _ = generate_labels(
+        specgram_timestamps, keys, keypress_timestamps, is_keydown
+    )
+    return log_mel_specgram, labels
+
+
 class SonicSnifferDataset(Dataset):
     def __init__(self, num_samples, data_path):  # , transform=None):
         self.data_path = data_path
@@ -153,22 +168,15 @@ class SonicSnifferDataset(Dataset):
         return len(self.audio_files)
 
     def __getitem__(self, idx):
-        # log_mel_specgram: [channels, n_mels, time]
-        log_mel_specgram, sample_rate, specgram_timestamps = get_spectrogram(
-            os.path.join(self.data_path, self.audio_files[idx]), self.n_mels
-        )
-        assert sample_rate == self.sample_rate
-        assert log_mel_specgram.shape[0] == self.num_channels
-        keys, keypress_timestamps, is_keydown = read_keypresses(
-            os.path.join(self.data_path, self.keypress_files[idx])
-        )
-        labels, _ = generate_labels(
-            specgram_timestamps, keys, keypress_timestamps, is_keydown
+        audio_file = os.path.join(self.data_path, self.audio_files[idx])
+        keypress_file = os.path.join(self.data_path, self.keypress_files[idx])
+        log_mel_specgram, labels = get_specgram_and_labels(
+            audio_file, keypress_file, self.sample_rate, self.num_channels, self.n_mels
         )
 
         # random num_samples slice
         start_idx = torch.randint(
-            0, len(specgram_timestamps) - self.num_samples, (1,)
+            0, log_mel_specgram.shape[-1] - self.num_samples, (1,)
         ).item()
         # [channels, n_mels, num_samples]
         sampled_log_mel_specgram = log_mel_specgram[

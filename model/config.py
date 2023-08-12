@@ -8,7 +8,7 @@ def get_config():
     parser.add_argument("--data_dir", type=str)
     parser.add_argument("--log_every_n_steps", type=int, default=50)
 
-    parser.add_arguement("--model_type", type=str, default="b0")
+    parser.add_argument("--model_type", type=str, default="b0")
 
     parser.add_argument("--mixed_precision", action="store_true")
     parser.add_argument("--find_unused_parameters", action="store_true")
