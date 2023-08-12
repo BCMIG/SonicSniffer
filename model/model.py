@@ -16,7 +16,7 @@ from dataset import KEYS
 #     return model
 
 
-def get_model():
+def get_model(variant):
     # Initializing a mobilevitv2-small style configuration
     num_channels = 2
     image_size = 128
@@ -29,8 +29,6 @@ def get_model():
         "b4": {"depths": [3, 8, 27, 3], "hidden_sizes": [64, 128, 320, 512]},
         "b5": {"depths": [3, 6, 40, 3], "hidden_sizes": [64, 128, 320, 512]},
     }
-
-    variant = "b0"
 
     configuration = SegformerConfig(
         num_channels=num_channels,

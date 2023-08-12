@@ -3,6 +3,7 @@ import lightning.pytorch as pl
 import torch.nn as nn
 import torch.optim as optim
 from einops import rearrange
+import wandb
 
 
 class SonicSniffer(pl.LightningModule):
@@ -36,6 +37,15 @@ class SonicSniffer(pl.LightningModule):
         y_hat = self(x)
         loss = self.loss(y_hat, y)
         self.log("train_loss", loss)
+        if self.current_epoch % 10 == 0:
+            # log images (wandb)
+            self.logger.experiment.log(
+                {
+                    "val_x": [wandb.Image(i) for i in x],
+                    "val_y": [wandb.Image(i) for i in y],
+                    "val_y_hat": [wandb.Image(i) for i in y_hat],
+                }
+            )
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -43,6 +53,15 @@ class SonicSniffer(pl.LightningModule):
         y_hat = self(x)
         loss = self.loss(y_hat, y)
         self.log("val_loss", loss)
+        if self.current_epoch % 10 == 0:
+            # log images (wandb)
+            self.logger.experiment.log(
+                {
+                    "val_x": [wandb.Image(i) for i in x],
+                    "val_y": [wandb.Image(i) for i in y],
+                    "val_y_hat": [wandb.Image(i) for i in y_hat],
+                }
+            )
         return loss
 
     def configure_optimizers(self):

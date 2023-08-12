@@ -3,6 +3,7 @@ import os
 import torch
 import torchaudio
 import json
+import functools
 
 import torchaudio.functional as F
 import torchaudio.transforms as T
@@ -12,6 +13,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 import matplotlib.pyplot as plt
 
 
+@functools.cache
 def get_spectrogram(path, n_mels=128):
     speech, sample_rate = torchaudio.load(path)
 
@@ -47,6 +49,7 @@ KEYS = list(string.ascii_lowercase) + [" ", "backspace", "shift", ","]
 KEYS_DICT = {key: i for i, key in enumerate(KEYS)}
 
 
+@functools.cache
 def read_keypresses(path):
     with open(path, "r") as f:
         keypresses = json.load(f)
@@ -80,6 +83,7 @@ def reconstruct_keypresses(keys, is_keydown):
     return "".join(output)
 
 
+@functools.cache
 def generate_labels(spectrogram_timestamps, keys, keypress_timestamps, is_keydown):
     spectrogram_timestamps = spectrogram_timestamps.clone()
     # Make sure the first timestamp is not 0, so that first keydown is registered
