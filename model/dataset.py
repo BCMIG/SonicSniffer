@@ -211,7 +211,7 @@ class SonicSnifferDataset(Dataset):
         return num_neg / num_pos
 
 
-def get_dataloaders(num_samples, batch_size, data_dir):
+def get_dataloaders(num_samples, batch_size, data_dir, num_workers):
     dataset = SonicSnifferDataset(num_samples, data_dir)
     dataset_size = len(dataset)
     train_size = int(0.8 * dataset_size)  # 80% for training
@@ -222,9 +222,15 @@ def get_dataloaders(num_samples, batch_size, data_dir):
         dataset, [train_size, test_size, val_size]
     )
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    train_loader = DataLoader(
+        train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers
+    )
+    test_loader = DataLoader(
+        test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers
+    )
+    val_loader = DataLoader(
+        val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers
+    )
 
     return train_loader, test_loader, val_loader
 

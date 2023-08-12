@@ -22,7 +22,7 @@ def main():
 
     model = get_unet()
     train_loader, test_loader, val_loader = get_dataloaders(
-        num_samples, cfg.batch_size, cfg.data_dir
+        num_samples, cfg.batch_size, cfg.data_dir, cfg.num_workers
     )
     sniffer = SonicSniffer(
         model,
