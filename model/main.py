@@ -1,25 +1,30 @@
 import lightning.pytorch as pl
 from pipeline import SonicSniffer
-from model import get_model
+from model import get_unet
 from dataset import get_dataloaders
 from config import get_config
 from utils import FindUnusedParametersCallback
 from lightning.pytorch.strategies import DDPStrategy
 
+from lovely_tensors import monkey_patch, set_config
+
 
 def main():
+    monkey_patch()
+    set_config(fig_show=True)  # so that it works outside of Jupyter
     logger = pl.loggers.WandbLogger(project="soundsniffer")
 
     cfg = get_config()
+    print(cfg)
     # to ensure deterministic splits
     pl.seed_everything(cfg.seed)
-    model = get_model(cfg.model_type)
     num_samples = 128
+
+    model = get_unet()
     train_loader, test_loader, val_loader = get_dataloaders(
         num_samples, cfg.batch_size, cfg.data_dir
     )
     sniffer = SonicSniffer(
-        num_samples,
         model,
         cfg.lr,
         cfg.weight_decay,
