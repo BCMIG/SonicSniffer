@@ -1,3 +1,6 @@
 [submodule "typing-test"]
 	path = typing-test
 	url = git@github.com:jasonkena/typing-test.git
+[submodule "model/mobilevit-pytorch"]
+	path = model/mobilevit-pytorch
+	url = https://github.com/chinhsuanwu/mobilevit-pytorch
