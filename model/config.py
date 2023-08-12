@@ -18,7 +18,8 @@ def get_config():
     # arguments for LightningModule
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight_decay", type=float, default=1e-4)
-    parser.add_argument("--pos_weight", type=float, default=1.0)
+    # pos_weight is estimated to be ~53 by SonicSnifferDataset
+    parser.add_argument("--pos_weight", type=float, default=40.0)
 
     # arguments for Dataset
     parser.add_argument("--num_workers", type=int, default=8)

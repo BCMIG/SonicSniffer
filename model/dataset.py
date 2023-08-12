@@ -43,7 +43,7 @@ def get_spectrogram(path, n_mels=128):
     return log_mel_specgram, sample_rate, timestamps
 
 
-KEYS = list(string.ascii_lowercase) + [" ", "backspace", "shift"]
+KEYS = list(string.ascii_lowercase) + [" ", "backspace", "shift", ","]
 KEYS_DICT = {key: i for i, key in enumerate(KEYS)}
 
 
@@ -191,6 +191,16 @@ class SonicSnifferDataset(Dataset):
 
         return sampled_log_mel_specgram, sampled_labels
 
+    def estimate_pos_weight(self):
+        num_pos = 0
+        num_total = 0
+        for i in range(len(self)):
+            _, labels = self[i]
+            num_pos += labels.sum()
+            num_total += labels.numel()
+        num_neg = num_total - num_pos
+        return num_neg / num_pos
+
 
 def get_dataloaders(num_samples, batch_size):
     dataset = SonicSnifferDataset(num_samples)
@@ -212,6 +222,7 @@ def get_dataloaders(num_samples, batch_size):
 
 if __name__ == "__main__":
     dataset = SonicSnifferDataset(128)
+    print(f"Estimated pos_weight: {dataset.estimate_pos_weight()}")
 
     data_path = "/run/host/var/home/jason/projects/SonicSniffer/server/uploads"
     audio_files = sorted([x for x in os.listdir(data_path) if x.endswith(".wav")])
