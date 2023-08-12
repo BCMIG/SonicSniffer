@@ -10,6 +10,7 @@ from transformers import (
     ASTModel,
     ASTConfig,
 )
+from unet import UNet
 from dataset import KEYS
 from utils import get_n_params
 
@@ -119,6 +120,26 @@ class SpectrogramTransformer(nn.Module):
 def get_model(variant, input_length):
     num_classes = len(KEYS)
     return SpectrogramTransformer(variant, num_classes, input_length)
+
+
+class SpectrogramUNet(nn.Module):
+    def __init__(self, n_channels, n_classes):
+        super().__init__()
+        self.n_channels = n_channels
+        self.n_classes = n_classes
+        self.model = UNet(n_channels, n_classes)
+
+    def forward(self, x):
+        # B, channels = 2, mel, time
+        x = self.model(x)
+        x = reduce(x, "b c m t -> b c t", "mean")
+        return x
+
+
+def get_unet():
+    num_channels = 2
+    num_labels = len(KEYS)
+    return SpectrogramUNet(num_channels, num_labels)
 
 
 if __name__ == "__main__":

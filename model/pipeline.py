@@ -19,7 +19,8 @@ class SonicSniffer(pl.LightningModule):
         self.fused = fused
 
         self.model = model
-        self.loss = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight))
+        # self.loss = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(pos_weight))
+        self.loss = nn.CrossEntropyLoss()
 
     def forward(self, x):
         return self.model(x)
@@ -44,7 +45,7 @@ class SonicSniffer(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = self.loss(y_hat, y)
-        self.log("val_loss", loss)
+        self.log("val_loss", loss, sync_dist=True)
         if self.current_epoch % 10 == 0:
             # log images (wandb)
             self.logger.experiment.log(

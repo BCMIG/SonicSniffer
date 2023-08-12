@@ -18,7 +18,8 @@ def get_spectrogram(path, n_mels=128):
 
     n_fft = 1024
     win_length = None
-    hop_length = 512
+    hop_length = 256
+    # hop_length = 512
 
     mel_spectrogram = T.MelSpectrogram(
         sample_rate=sample_rate,
@@ -229,9 +230,9 @@ def get_dataloaders(num_samples, batch_size, data_dir):
 
 
 if __name__ == "__main__":
-    data_path = "/run/host/var/home/jason/projects/SonicSniffer/server/uploads"
+    data_path = "/run/host/var/home/jason/mnt/SonicSniffer/server/uploads"
     dataset = SonicSnifferDataset(128, data_path)
-    print(f"Estimated pos_weight: {dataset.estimate_pos_weight()}")
+    # print(f"Estimated pos_weight: {dataset.estimate_pos_weight()}")
 
     audio_files = sorted([x for x in os.listdir(data_path) if x.endswith(".wav")])
     keypress_files = sorted([x for x in os.listdir(data_path) if x.endswith(".json")])

@@ -1,6 +1,6 @@
 import lightning.pytorch as pl
 from pipeline import SonicSniffer
-from model import get_model
+from model import get_unet
 from dataset import get_dataloaders
 from config import get_config
 from utils import FindUnusedParametersCallback
@@ -18,7 +18,8 @@ def main():
     # to ensure deterministic splits
     pl.seed_everything(cfg.seed)
     num_samples = 128
-    model = get_model(cfg.model_type, num_samples)
+
+    model = get_unet()
     train_loader, test_loader, val_loader = get_dataloaders(
         num_samples, cfg.batch_size, cfg.data_dir
     )
