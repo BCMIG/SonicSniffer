@@ -1,22 +1,78 @@
 <!-- src/routes/+layout.svelte -->
 <script lang="ts">
-	import { invalidate } from '$app/navigation'
-	import { onMount } from 'svelte'
+    import '@skeletonlabs/skeleton/themes/theme-skeleton.css'
 
-	export let data
+    // This contains the bulk of Skeletons required styles:
+    import '@skeletonlabs/skeleton/styles/skeleton.css'
 
-	let { supabase, session } = data
-	$: ({ supabase, session } = data)
+    // Finally, your application's global stylesheet (sometimes labeled 'app.css')
+    import '../app.postcss'
 
-	onMount(() => {
-		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
-			if (_session?.expires_at !== session?.expires_at) {
-				invalidate('supabase:auth')
-			}
-		})
+    import { AppBar } from '@skeletonlabs/skeleton'
 
-		return () => data.subscription.unsubscribe()
-	})
+    import { goto, invalidate } from '$app/navigation'
+    import { onMount } from 'svelte'
+
+    import { AppShell } from '@skeletonlabs/skeleton'
+
+    import { LightSwitch } from '@skeletonlabs/skeleton'
+
+    export let data
+
+    let { supabase, session } = data
+    $: ({ supabase, session } = data)
+
+    onMount(() => {
+        const { data } = supabase.auth.onAuthStateChange((event, _session) => {
+            if (_session?.expires_at !== session?.expires_at) {
+                invalidate('supabase:auth')
+            }
+        })
+
+        return () => data.subscription.unsubscribe()
+    })
+
+    function logout() {
+        supabase.auth
+            .signOut()
+            .then(() => {
+                goto('/')
+            })
+            .catch((error) => {
+                console.error('Error logging out:', error)
+            })
+    }
 </script>
 
-<slot />
+<AppShell>
+    <svelte:fragment slot="header">
+        <AppShell>
+            <svelte:fragment slot="header">
+                <AppBar>
+                    <svelte:fragment slot="lead">SonicSniffer</svelte:fragment>
+                    <svelte:fragment slot="trail">
+                        {#if session}
+                            <button
+                                type="button"
+                                class="btn variant-filled"
+                                on:click={logout}
+                            >
+                                <span>Log Out</span>
+                            </button>
+                        {/if}
+                        <LightSwitch />
+                    </svelte:fragment>
+                </AppBar>
+            </svelte:fragment>
+            <!-- ... -->
+        </AppShell>
+    </svelte:fragment>
+    <!-- (sidebarLeft) -->
+    <!-- (sidebarRight) -->
+    <!-- (pageHeader) -->
+    <!-- Router Slot -->
+    <slot />
+    <!-- ---- / ---- -->
+    <!-- (pageFooter) -->
+    <svelte:fragment slot="footer">Footer</svelte:fragment>
+</AppShell>
