@@ -5,5 +5,7 @@ mkShell {
       nodejs
       nodePackages.npm
       supabase-cli
+      railway
+      nixpacks
     ];
 }
