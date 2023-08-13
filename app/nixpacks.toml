@@ -6,3 +6,8 @@ cmds = ['npm run build']
 
 [start]
 cmd = 'node build/index.js'
+
+[variables]
+PUBLIC_SUPABASE_URL='https://xythrjnimjyekctrykqw.supabase.co'
+PUBLIC_SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5dGhyam5pbWp5ZWtjdHJ5a3F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTE4NTg5MDIsImV4cCI6MjAwNzQzNDkwMn0.aH71jE4mF-l3C1gqA5EM1RqOt8-XYAsj0q3Rz2hyvQA'
+PORT='80'

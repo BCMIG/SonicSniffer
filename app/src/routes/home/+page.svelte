@@ -66,6 +66,7 @@
       };
 
       mediaRecorder.onstop = async () => {
+        console.log("Stopped recording.");
         const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
 
         // send it to the server at POST /api/test
@@ -93,6 +94,7 @@
   }
 
   function stopRecording() {
+    console.log("Stopping recording.");
     const textArea = document.querySelector("textarea");
     if (textArea) {
       textArea.removeEventListener("keydown", handleKey);
