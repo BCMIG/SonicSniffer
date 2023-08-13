@@ -1,3 +1,4 @@
+import edt
 import string
 import os
 import torch
@@ -120,10 +121,22 @@ def generate_labels(spectrogram_timestamps, keys, keypress_timestamps, is_keydow
     return labels, space_keyup_idx
 
 
+def get_sdf(labels):
+    # NOTE: positive if inside keydown
+    # [num_keys, time]
+    arrays = [labels[i] for i in range(len(KEYS))]
+    arrays = [x.numpy() > 0 for x in arrays]
+    sdfs = [edt.sdf(x) for x in arrays]
+    sdfs = [torch.tensor(x) for x in sdfs]
+    sdf = torch.stack(sdfs, dim=0)
+    # normalized later in labels
+    # make sure to clamp (in case of all zeros/ones)
+
+    return sdf
+
+
 @functools.cache
-def get_specgram_and_labels(
-    audio_path, keypress_path, sample_rate, num_channels, n_mels
-):
+def get_specgram_labels(audio_path, keypress_path, sample_rate, num_channels, n_mels):
     # log_mel_specgram: [channels, n_mels, time]
     log_mel_specgram, sample_rate, specgram_timestamps = get_spectrogram(
         audio_path, n_mels
@@ -171,7 +184,7 @@ class SonicSnifferDataset(Dataset):
     def __getitem__(self, idx):
         audio_file = os.path.join(self.data_path, self.audio_files[idx])
         keypress_file = os.path.join(self.data_path, self.keypress_files[idx])
-        log_mel_specgram, labels = get_specgram_and_labels(
+        log_mel_specgram, labels = get_specgram_labels(
             audio_file, keypress_file, self.sample_rate, self.num_channels, self.n_mels
         )
 
@@ -189,6 +202,11 @@ class SonicSnifferDataset(Dataset):
         ) / sampled_log_mel_specgram.std()
         # [num_keys, num_samples]
         sampled_labels = labels[:, start_idx : start_idx + self.num_samples]
+        sampled_sdf = get_sdf(sampled_labels)
+        # clamp to remove infs
+        sampled_sdf = torch.clamp(sampled_sdf, -1, 1)
+        # normalize sdf to unit length
+        sampled_sdf = sampled_sdf / self.num_samples
 
         assert sampled_log_mel_specgram.shape[0] == self.num_channels
         assert sampled_log_mel_specgram.shape[1] == self.n_mels
@@ -197,14 +215,15 @@ class SonicSnifferDataset(Dataset):
             == sampled_labels.shape[1]
             == self.num_samples
         )
+        assert sampled_sdf.shape == sampled_labels.shape
 
-        return sampled_log_mel_specgram, sampled_labels
+        return sampled_log_mel_specgram, sampled_labels, sampled_sdf
 
     def estimate_pos_weight(self):
         num_pos = 0
         num_total = 0
         for i in range(len(self)):
-            _, labels = self[i]
+            _, labels, _ = self[i]
             num_pos += labels.sum()
             num_total += labels.numel()
         num_neg = num_total - num_pos
@@ -253,15 +272,20 @@ if __name__ == "__main__":
     labels, space_keyup_idx = generate_labels(
         specgram_timestamps, keys, keypress_timestamps, is_keydown
     )
+    labels = labels[:, :128]
+    sdf = get_sdf(labels) / labels.shape[1]
+    delta = 0.05
+    sdf = torch.clamp(sdf, -delta, delta) / delta
 
     from utils import plot_spectrogram, plot_labels
 
-    fig, axs = plt.subplots(2, 1)
+    fig, axs = plt.subplots(3, 1)
     plot_spectrogram(
         log_mel_specgram[0], title="log mel spectrogram", ax=axs[0], to_db=False
     )
     # show image on ax1
     plot_labels(labels, ax=axs[1])
+    plot_labels(sdf, ax=axs[2])
 
     fig.tight_layout()
     plt.show()

@@ -20,13 +20,16 @@ def get_config():
 
     # arguments for LightningModule
     # parser.add_argument("--lr", type=float, default=1e-4)
+    # try lower weight decay next
     parser.add_argument("--weight_decay", type=float, default=0.05)
 
     # pos_weight is estimated to be ~53 by SonicSnifferDataset
     parser.add_argument("--pos_weight", type=float, default=1.0)
+    # used for clamping, see DeepSDF paper
+    parser.add_argument("--sdf_delta", type=float, default=0.05)
 
     # arguments for Dataset
-    parser.add_argument("--num_workers", type=int, default=64)
+    parser.add_argument("--num_workers", type=int, default=0)  # single
 
     args = parser.parse_args()
 

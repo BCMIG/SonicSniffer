@@ -29,6 +29,7 @@ def main():
         cfg.lr,
         cfg.weight_decay,
         cfg.pos_weight,
+        cfg.sdf_delta,
         fused=False,  # not cfg.cpu
     )
 

@@ -127,13 +127,18 @@ class SpectrogramUNet(nn.Module):
         super().__init__()
         self.n_channels = n_channels
         self.n_classes = n_classes
-        self.model = UNet(n_channels, n_classes)
+        self.model = UNet(n_channels, n_classes * 2)
 
     def forward(self, x):
         # B, channels = 2, mel, time
         x = self.model(x)
+        seg, sdf = torch.split(x, self.n_classes, dim=1)
         x = reduce(x, "b c m t -> b c t", "mean")
-        return x
+
+        seg, sdf = torch.split(x, self.n_classes, dim=1)
+        assert seg.shape == sdf.shape
+
+        return seg, sdf
 
 
 def get_unet():
