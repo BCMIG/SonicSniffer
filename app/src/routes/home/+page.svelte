@@ -120,3 +120,42 @@
     <textarea />
     <button on:click={stopRecording}>Stop Recording</button>
 </main>
+
+<style>
+  main {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  p {
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Button Styles */
+  button {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #d0d0d0;
+  }
+
+  /* Textarea Styles */
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    min-height: 150px;
+  }
+</style>
