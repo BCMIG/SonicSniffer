@@ -27,6 +27,9 @@ def get_config():
     parser.add_argument("--pos_weight", type=float, default=1.0)
     # used for clamping, see DeepSDF paper
     parser.add_argument("--sdf_delta", type=float, default=0.05)
+    # multipliers for loss terms
+    # seg then sdf
+    parser.add_argument("--loss_weights", nargs="+", type=float, default=[1.0, 1.0])
 
     # arguments for Dataset
     parser.add_argument("--num_workers", type=int, default=0)  # single

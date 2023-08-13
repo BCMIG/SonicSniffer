@@ -19,7 +19,7 @@ class SDFLoss(nn.Module):
 
 
 class SonicSniffer(pl.LightningModule):
-    def __init__(self, model, lr, weight_decay, pos_weight, delta, fused):
+    def __init__(self, model, lr, weight_decay, pos_weight, delta, loss_weights, fused):
         super().__init__()
         # save_hyperparameters writes args to hparams attribute, also used by load_from_checkpoint, so if we ignore "stunet", module can't be initialized
         # so we save passed modules in save_hyperparameters without writing to file
@@ -28,6 +28,7 @@ class SonicSniffer(pl.LightningModule):
 
         self.lr = lr
         self.weight_decay = weight_decay
+        self.loss_weights = loss_weights
         self.fused = fused
 
         self.model = model
@@ -45,7 +46,7 @@ class SonicSniffer(pl.LightningModule):
         pred_seg, pred_sdf = self(img)
         seg_loss = self.seg_loss(pred_seg, labels)
         sdf_loss, sdf = self.sdf_loss(sdf, pred_sdf)
-        loss = seg_loss + sdf_loss
+        loss = self.loss_weights[0] * seg_loss + self.loss_weights[1] * sdf_loss
         self.log_dict(
             {
                 "train_seg_loss": seg_loss,
@@ -70,8 +71,8 @@ class SonicSniffer(pl.LightningModule):
         img, labels, sdf = batch
         pred_seg, pred_sdf = self(img)
         seg_loss = self.seg_loss(pred_seg, labels)
-        sdf_loss, sdf = self.sdf_loss(pred_sdf, sdf)
-        loss = seg_loss + sdf_loss
+        sdf_loss, sdf = self.sdf_loss(sdf, pred_sdf)
+        loss = self.loss_weights[0] * seg_loss + self.loss_weights[1] * sdf_loss
         self.log_dict(
             {
                 "val_seg_loss": seg_loss,
