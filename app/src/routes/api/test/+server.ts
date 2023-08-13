@@ -36,5 +36,14 @@ export async function POST({request, cookies, locals: { supabase, getSession }})
         return new Response()
     }
 
+    const { data: _, error: testError } = await supabase.from("tests").insert({
+        id: id,
+        data: events,
+    });
+
+    if (testError) {
+        console.error("Error uploading test:", testError);
+    }
+
     return new Response()
 }

@@ -40,13 +40,19 @@
   });
 
   function handleKey(event: KeyboardEvent) {
-    console.log(event)
+    console.log(event);
     const eventType = event.type;
     const key = event.key;
-    const timestamp = event.timeStamp - (startTime || event.timeStamp); // Calculate the relative timestamp
+
+    // Initialize the startTime at the first keypress
+    if (startTime === null) {
+        startTime = event.timeStamp;
+    }
+
+    const timestamp = event.timeStamp - startTime; // Calculate the relative timestamp
 
     userInput.push({ type: eventType, key, timestamp });
-  }
+}
 
   async function startRecording() {
     if (!navigator.mediaDevices) {
@@ -87,7 +93,6 @@
         textArea.addEventListener("keydown", handleKey);
         textArea.addEventListener("keyup", handleKey);
       }
-      startTime = performance.now();
     } catch (error) {
       console.error("Error starting recording:", error);
     }
