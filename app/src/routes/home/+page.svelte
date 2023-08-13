@@ -106,8 +106,8 @@
 <main>
     <p>Type the following text. Press "Stop Recording" when you're finished.</p>
     <p>{testText}</p>
-    <textarea />
-    <button on:click={stopRecording}>Stop Recording</button>
+    <textarea class="textarea" />
+    <button class="btn" on:click={stopRecording}>Stop Recording</button>
     <span class="recording-indicator">
         {#if isRecording}
             <div class="recording-dot" />

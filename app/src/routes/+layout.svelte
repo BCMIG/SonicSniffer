@@ -19,6 +19,8 @@
 
     export let data
 
+    let ready = false
+
     let { supabase, session } = data
     $: ({ supabase, session } = data)
 
@@ -28,6 +30,8 @@
                 invalidate('supabase:auth')
             }
         })
+
+        ready = true
 
         return () => data.subscription.unsubscribe()
     })
@@ -60,7 +64,7 @@
                                 <span>Log Out</span>
                             </button>
                         {/if}
-                        <LightSwitch />
+                        {#if ready}<LightSwitch />{/if}
                     </svelte:fragment>
                 </AppBar>
             </svelte:fragment>
