@@ -27,7 +27,7 @@ export async function POST({request, cookies, locals: { supabase, getSession }})
     const file = data.get("audio") as File;
 
     // Assuming each user has a unique path, else you might want to give the file a unique name.
-    const filePath = `${id}/${randomUUID()}.wav`;  
+    const filePath = `audio/${id}/${randomUUID()}.wav`;  
 
     const { error } = await supabase.storage.from("files").upload(filePath, file);
 

@@ -16,7 +16,7 @@
 			supabaseClient={data.supabase}
 			view="magic_link"
 			redirectTo={`/auth/callback`}
-			providers={['google', 'github']}
+			providers={['github']}
 			showLinks={false}
 			appearance={{theme: ThemeSupa}}
 			additionalData={{ hacky: "this is hacky fix" }}
