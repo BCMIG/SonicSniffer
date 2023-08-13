@@ -11,20 +11,18 @@
 
   export let data;
 
-
   function logout() {
-      data.supabase.auth.signOut().then(() => {
-        goto("/");
-      }).catch(error => {
-          console.error("Error logging out:", error);
-      });
+    data.supabase.auth.signOut().then(() => {
+      goto("/");
+    }).catch(error => {
+      console.error("Error logging out:", error);
+    });
   }
-
 
   onMount(async () => {
     const user = (await data.supabase.auth.getUser()).data.user;
-
     console.log(user);
+    
     try {
       const response = await fetch("/api/test");
       if (response.ok) {
@@ -44,15 +42,13 @@
     const eventType = event.type;
     const key = event.key;
 
-    // Initialize the startTime at the first keypress
     if (startTime === null) {
         startTime = event.timeStamp;
     }
 
-    const timestamp = event.timeStamp - startTime; // Calculate the relative timestamp
-
+    const timestamp = event.timeStamp - startTime;
     userInput.push({ type: eventType, key, timestamp });
-}
+  }
 
   async function startRecording() {
     if (!navigator.mediaDevices) {
@@ -61,6 +57,8 @@
     }
 
     try {
+      console.log("Started recording.")
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder = new MediaRecorder(stream);
       audioChunks = [];
@@ -74,8 +72,6 @@
       mediaRecorder.onstop = async () => {
         console.log("Stopped recording.");
         const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-
-        // send it to the server at POST /api/test
         const formData = new FormData();
         formData.append("audio", audioBlob);
         formData.append("userInput", JSON.stringify(userInput));
@@ -114,11 +110,16 @@
 </script>
 
 <main>
-    <button on:click={logout}>Logout</button>
-    <p>Type the following text. Press "Stop Recording" when you're finished.</p>
-    <p>{testText}</p>
-    <textarea />
-    <button on:click={stopRecording}>Stop Recording</button>
+  <button on:click={logout}>Logout</button>
+  <p>Type the following text. Press "Stop Recording" when you're finished.</p>
+  <p>{testText}</p>
+  <textarea />
+  <button on:click={stopRecording}>Stop Recording</button>
+  <span class="recording-indicator">
+    {#if isRecording}
+    <div class="recording-dot" />
+    Recording...{/if}
+  </span>
 </main>
 
 <style>
@@ -135,7 +136,6 @@
     line-height: 1.5;
   }
 
-  /* Button Styles */
   button {
     background-color: #e0e0e0;
     color: #333;
@@ -150,12 +150,27 @@
     background-color: #d0d0d0;
   }
 
-  /* Textarea Styles */
   textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     resize: vertical;
     min-height: 150px;
+  }
+
+  .recording-indicator {
+    display: inline-flex;
+    align-items: center;
+    color: red;
+    margin-left: 10px;
+    font-weight: bold;
+  }
+
+  .recording-dot {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    margin-right: 5px;
   }
 </style>
